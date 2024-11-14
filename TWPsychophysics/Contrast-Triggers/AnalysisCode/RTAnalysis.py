@@ -289,7 +289,7 @@ ax2.set_ylabel('Wave travel time (s)')
 # Create data frame of data
 #AllCond = pd.DataFrame(TW6,TW75,TW9)
 #print(AnovaRM(AllCond))
-
+00
 # exporting data to run repeated measures ANOVA as running it here is a nightmare with current setup
 import csv
 with open('Data.csv', 'w', newline='') as csvfile:

@@ -16,7 +16,7 @@ Conditions = [0.9, 0.75, 0.6]
 
 FilePrefix = "TW_" + PartInitials + "*"
 
-DataLocation = '/home/rowanhuxley/Documents/Data_Various/BinRiv/PsychophysicsGeneral/data/'
+DataLocation = '/home/rowanhuxley/Documents/Data_Various/BinRiv/Psychophysics/Contrast-Triggers/Data/'
 SearchTxt = DataLocation + FilePrefix
 
 # %% Travel time analysis
