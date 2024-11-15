@@ -77,6 +77,14 @@ AllData = AllData.transpose()
 AllData.loc[AllData["Contrast_Level"] == 0.899999976158, "Contrast_Level"] = 0.9
 AllData.loc[AllData["Contrast_Level"] == 0.600000023842, "Contrast_Level"] = 0.6
 
+# Add column for trial number
+
+LinTrials = np.linspace(1,17,17)
+TrialNumbers = np.array([])
+for x in range(int(len(AllData)/17)):
+    TrialNumbers = np.append(TrialNumbers,LinTrials)
+
+AllData["Trial_Number"] = TrialNumbers
 
 # %% Subtract reaction time from response time
 
@@ -153,7 +161,7 @@ print("\n")
 
 
 # %% Visualisation
-
+sns.set_theme()
 # KDE plot
 sns.displot(data=AllData[AllData.Button_Pressed == "['right']"], x="Response_Time", 
             hue='Contrast_Level', kind='kde', palette="pastel")
@@ -165,3 +173,21 @@ sns.catplot(data=AllData[AllData.Button_Pressed == "['right']"], kind="violin",
 # Box plot
 sns.catplot(data=AllData[AllData.Button_Pressed == "['right']"], kind="box", 
             x="Contrast_Level", y="Response_Time", palette="pastel")
+
+
+# Over Time anaysis
+
+# Line Graph
+for Cond in Conditions:
+    Plot = sns.catplot(data=AllData[AllData.Contrast_Level == Cond], x="Trial_Number",
+                       y="Response_Time", kind="point", height=8.27, aspect=15/8.27)
+    Plot.set_axis_labels("Trial Number", "Response Time (s)")
+    Plot.fig.suptitle(Cond, fontsize=20, fontweight='bold')
+    Plot.fig.subplots_adjust(top=0.95)
+    Plot.set(ylim=(0.65, 2))
+    Plot.tick_params(axis='both', which='major', labelsize=14)
+    
+    
+Plot = sns.catplot(data=AllData, x="Trial_Number",
+                   y="Response_Time", kind="violin", height=8.27, aspect=15/8.27, col="Contrast_Level")
+Plot.set_axis_labels("Trial Number", "Response Time (s)")
