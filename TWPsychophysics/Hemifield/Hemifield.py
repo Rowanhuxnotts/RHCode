@@ -1,30 +1,31 @@
 #Import modules
 from psychopy import *
-#import numpy as num
 from scipy import *
 import time, copy 
 from datetime import datetime
 from numpy.random import shuffle
+import csv
+import random as rand
 
 #--------------------------------------
 #              Initialisation
 #--------------------------------------
 
 #Experiment params
-NumTrials = 1
+NumTrials = 25
+ConditionList = ["Right", "Left"] 
+rand.shuffle(ConditionList)
 
 # Get Date and start time
 now = datetime.now()
 Date = now.strftime('%d%m%y_%H%M')
 
-#present a dialogue box for changing params
+# Present a dialogue box for changing params
 params = {'Observer':''}
 paramsDlg2 = gui.DlgFromDict(params, title='Travelling Waves Basic', fixed=['date'])
- 
-ConditionList = [0.9, 0.75, 0.6] 
- 
-Exp = data.TrialHandler(ConditionList,NumTrials, method='random', dataTypes=None, extraInfo=None,seed=None,originPath=None)
 
+# Initialise trial handeler
+Exp = data.TrialHandler(ConditionList,NumTrials, dataTypes=None, extraInfo=None,seed=None,originPath=None)
 
 #Setup window
 resX=1680
@@ -43,14 +44,13 @@ Clock = core.Clock()
 #            Create stimlui 
 #--------------------------------------
 
-#Create stimlui initial stimuli
+# Annuli
 RadL = visual.RadialStim(winL,size=resY-350,angularCycles=25, color=-1,angularRes=35,units="pix", radialCycles = 0, contrast = 0.7)
 maskL = visual.RadialStim(winL,color=[0,0,0],size=(resY-350)*0.745,angularCycles=25,angularRes=35,units="pix")
 ConcR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1,angularRes=35,units="pix", radialCycles= 8, ori=300, contrast = 0.3)
 maskR = visual.RadialStim(winR,color=[0,0,0],size=(resY-350)*0.76,angularCycles=25,angularRes=35,units="pix")
 
 # End location
-
 EndLocL2 = visual.PatchStim(winL, tex='None', units='pix', pos=[-140,-420], size=(7,60), color=[-1,-1,-1], ori=200)
 EndLocL1 = visual.PatchStim(winL, tex='None', units='pix', pos=[0,-440], size=(7,60), color=[-1,-1,-1], ori=0)
 EndLocR2 = visual.PatchStim(winR, tex='None', units='pix', pos=[-140,-420], size=(7,60), color=[-1,-1,-1], ori=200)
@@ -97,8 +97,8 @@ Fixation = [fixationL, fixationR, BarBottom, BarTop, BarLeft, BarRight, EndLocL1
 
 # Break stimuli
 
-BreakStimL = visual.RadialStim(winL,size=resY-350,angularCycles=0, color=1,angularRes=35,units="pix", radialCycles = 0, contrast = 1)
-BreakStimR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=1,angularRes=35,units="pix", radialCycles = 0, contrast = 1)
+BreakStimL = visual.RadialStim(winL,size=resY-350,angularCycles=0, color=0,angularRes=35,units="pix", radialCycles = 0, contrast = 1)
+BreakStimR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=0,angularRes=35,units="pix", radialCycles = 0, contrast = 1)
 
 #--------------------------------------
 #                 Messages
@@ -138,15 +138,27 @@ BreakNum = 0
 # Initialise lists that will store output data
 Direction = []
 ResponseTime = []
-ContrastLevel = []
+VisibleHemifield = []
 
 for y in Exp:
-# Create trigger with new contrast
-    triggerR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1,angularRes=35,units="pix", radialCycles = 8, 
-        visibleWedge = (330,360), contrast = y)
+# Set up blocking for trial
+    if y == 'Left':
+        BlockL = visual.PatchStim(winL, tex='None', units='pix', pos=[-240,0], size=(480,resY-100), color=[0, 0, 0])
+        BlockR = visual.PatchStim(winR, tex='None', units='pix', pos=[-240,0], size=(480,resY-100), color=[0, 0, 0])
+        #  Contrast trigger
+        triggerR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1, angularRes=35,units="pix", radialCycles = 8, 
+            visibleWedge = (0,30), contrast = 0.9)
+    elif y == 'Right':
+        BlockL = visual.PatchStim(winL, tex='None', units='pix', pos=[240,0], size=(480,resY-100), color=[0, 0, 0])
+        BlockR = visual.PatchStim(winR, tex='None', units='pix', pos=[240,0], size=(480,resY-100), color=[0, 0, 0])
+        #  Contrast trigger
+        triggerR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1, angularRes=35,units="pix", radialCycles = 8, 
+            visibleWedge = (330,360), contrast = 0.9)
 
     fusionL.draw()
     fusionR.draw()
+    BlockL.draw()
+    BlockR.draw()
     for x in Fixation:
         x.draw()
     winL.flip()
@@ -158,6 +170,8 @@ for y in Exp:
     fusionR.draw()
     ConcR.draw()
     maskR.draw()
+    BlockL.draw()
+    BlockR.draw()
     for x in Fixation:
         x.draw()
 
@@ -172,6 +186,8 @@ for y in Exp:
     maskL.draw()
     ConcR.draw()
     maskR.draw()
+    BlockL.draw()
+    BlockR.draw()
     for x in Fixation:
         x.draw()
     
@@ -187,7 +203,8 @@ for y in Exp:
     ConcR.draw()
     triggerR.draw()
     maskR.draw()
-    
+    BlockL.draw()
+    BlockR.draw()
     for x in Fixation:
         x.draw()
 
@@ -204,28 +221,29 @@ for y in Exp:
     maskL.draw()
     ConcR.draw()
     maskR.draw()
-
+    BlockL.draw()
+    BlockR.draw()
     for x in Fixation:
         x.draw()
     winL.flip()
     winR.flip()
 
     Keys = event.waitKeys()
-
 # Add data from trial
     RespTime = Clock.getTime()
     ResponseTime.append(RespTime)
-    ContrastLevel.append(y)
+    VisibleHemifield.append(y)
     Keys = Keys[0]
     Keys = Keys.strip("[']")
     Direction.append(Keys)
+
 #    Clear Screen
     for x in Fixation:
         x.draw()
     winL.flip()
     winR.flip()
     BreakNum +=1
-    if BreakNum == -1:
+    if BreakNum == 10:
         fusionL.draw()
         fusionR.draw()
         BreakStimL.draw()
@@ -250,20 +268,19 @@ winL.flip()
 winR.flip()
 event.waitKeys()
 
-#Output reaction times in csv
-
 if params['Observer'] == 'z':
     pass
 else:
     #Output responses in csv
-    FileName = './data/TW_' + params['Observer'] +  '_' + Date + '.csv'
+    FileName = './data/HF_' + params['Observer'] +  '_' + Date + '.csv'
     #, newline=''     ./data/
     with open(FileName, 'w') as csvfile:
         Writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        Writer.writerow(["ParticipantID", "ContrastLevel", "Direction", "ResponseTime"])
+        Writer.writerow(["ParticipantID", "VisibleHemifield", "Direction", "ResponseTime"])
         for x in range(len(ResponseTime)):
             Writer.writerow([params['Observer'], VisibleHemifield[x], Direction[x], ResponseTime[x]])
+
 #Close screen
 winL.close()
 winR.close()

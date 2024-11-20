@@ -9,7 +9,7 @@
 #
 # To do-
 # Error propagation
-# Outlier removal doesn't seem to be working...
+
 
 # %% Initialisation
 
@@ -195,3 +195,23 @@ Plot = sns.catplot(data=AllData, x="Trial_Number",
 Plot.set_axis_labels("Trial Number", "Response Time (s)")
 
 
+
+
+# Plot over time from pauses 
+
+a = np.linspace(1,5,5)
+b = np.linspace(1,5,5)
+c = np.linspace(1,5,5)
+d = np.linspace(1,2,2)
+LinPause = np.concatenate((a, b,c ,d), axis=None)
+
+PauseInt = np.array([])
+for x in range(int(len(AllData)/17)):
+    PauseInt = np.append(PauseInt,LinPause)
+
+AllData["PauseInt"] = PauseInt
+
+
+PausesPlot = sns.catplot(data=AllData, x="PauseInt",
+                   y="Response_Time", kind="violin", height=8.27, aspect=15/8.27, col="Contrast_Level")
+PausesPlot.set_axis_labels("Trial Number", "Response Time (s)")

@@ -33,8 +33,8 @@ winL = visual.Window(size=(resX,resY), monitor='testMonitor', units='pix', bitsM
 winR = visual.Window(size=(resX,resY), monitor='testMonitor', units='pix', bitsMode=None, fullscr=True, allowGUI=False, color=0.0,screen=1)
 
 # Are these needed???
-#winL.setGamma([1.688,1.688,1.688])
-#winR.setGamma([1.841,1.841,1.841])
+winL.setGamma([1.688,1.688,1.688])
+winR.setGamma([1.841,1.841,1.841])
 
 # Clock
 Clock = core.Clock()
@@ -135,10 +135,6 @@ event.waitKeys()
 
 BreakNum = 0
 
-# Initialise lists that will store output data
-Direction = []
-ResponseTime = []
-ContrastLevel = []
 
 for y in Exp:
 # Create trigger with new contrast
@@ -211,14 +207,11 @@ for y in Exp:
     winR.flip()
 
     Keys = event.waitKeys()
-
 # Add data from trial
     RespTime = Clock.getTime()
-    ResponseTime.append(RespTime)
-    ContrastLevel.append(y)
-    Keys = Keys[0]
-    Keys = Keys.strip("[']")
-    Direction.append(Keys)
+    Exp.addData('TravelTime', RespTime)
+    Exp.addData('ContrastLevel', y)
+    Exp.addData('KeyPressed', Keys)
 #    Clear Screen
     for x in Fixation:
         x.draw()
@@ -252,18 +245,8 @@ event.waitKeys()
 
 #Output reaction times in csv
 
-if params['Observer'] == 'z':
-    pass
-else:
-    #Output responses in csv
-    FileName = './data/TW_' + params['Observer'] +  '_' + Date + '.csv'
-    #, newline=''     ./data/
-    with open(FileName, 'w') as csvfile:
-        Writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        Writer.writerow(["ParticipantID", "ContrastLevel", "Direction", "ResponseTime"])
-        for x in range(len(ResponseTime)):
-            Writer.writerow([params['Observer'], VisibleHemifield[x], Direction[x], ResponseTime[x]])
+FileName = './data/TW_' + params['Observer'] +  '_' + Date
+Exp.saveAsExcel(FileName)
 #Close screen
 winL.close()
 winR.close()

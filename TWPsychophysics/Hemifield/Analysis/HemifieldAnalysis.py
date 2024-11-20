@@ -8,6 +8,7 @@
 # RJH 19/11/2024
 #
 # To do-
+# Trigger rate analysis
 
 # %% Initialisation
 
@@ -110,9 +111,16 @@ print("Left=")
 print(AllData.loc[(AllData["VisibleHemifield"] == "Left") & (AllData["ResponseTime"] > Descriptives["mean"].iloc[1] * 3)])
 print("\n")
 
+# %% Stats
 
+# T-test 
+
+
+stats.ttest_rel(AllData.loc[(AllData["Direction"] == "right") & (AllData["VisibleHemifield"] == "Right"), "ResponseTime"], AllData.loc[(AllData["Direction"] == "right") & (AllData["VisibleHemifield"] == "Left"), "ResponseTime"])
 # %% Visualisation
 sns.set_theme()
+
+# Wave speed 
 
 # KDE plot
 sns.displot(data=AllData[AllData.Direction == "right"], x="ResponseTime", 
@@ -137,7 +145,7 @@ for Cond in Conditions:
     Plot.set_axis_labels("Trial Number", "Response Time (s)")
     Plot.fig.suptitle(Cond, fontsize=20, fontweight='bold')
     Plot.fig.subplots_adjust(top=0.95)
-    Plot.set(ylim=(0.65, 2))
+    #Plot.set(ylim=(0.65, 2))
     Plot.tick_params(axis='both', which='major', labelsize=14)
     
 
@@ -146,4 +154,9 @@ Plot = sns.catplot(data=AllData, x="index", y="ResponseTime", kind="violin",
                    height=8.27, aspect=15/8.27, col="VisibleHemifield")
 Plot.set_axis_labels("Trial Number", "Response Time (s)")
 
+
+# Trigger rate
+
+# bar chart
+sns.countplot(data=AllData, x="Direction", hue = "VisibleHemifield", palette="pastel")
 
