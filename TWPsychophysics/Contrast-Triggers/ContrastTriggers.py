@@ -263,7 +263,7 @@ else:
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         Writer.writerow(["ParticipantID", "ContrastLevel", "Direction", "ResponseTime"])
         for x in range(len(ResponseTime)):
-            Writer.writerow([params['Observer'], VisibleHemifield[x], Direction[x], ResponseTime[x]])
+            Writer.writerow([params['Observer'], ContrastLevel[x], Direction[x], ResponseTime[x]])
 #Close screen
 winL.close()
 winR.close()
