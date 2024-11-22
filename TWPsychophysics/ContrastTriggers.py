@@ -1,26 +1,35 @@
-#Import modules
+# %% Import modules
 from psychopy import *
-#import numpy as num
+#import numpy as np
 from scipy import *
 import time, copy 
 from datetime import datetime
 from numpy.random import shuffle
 
+# %% Information about versions, etc.
+# Experiment machine
+# OS version: @todo - get using `sw_vers` in shell
+# psychpy version: 
+
+# %%
 #--------------------------------------
 #              Initialisation
 #--------------------------------------
 
-#Experiment params
-NumTrials = 1
+# Experiment params
+NumTrials = 1 # want to set default here, but take arg as input?
 
 # Get Date and start time
 now = datetime.now()
 Date = now.strftime('%d%m%y_%H%M')
 
-#present a dialogue box for changing params
+# present a dialogue box for changing params
 params = {'Observer':''}
 paramsDlg2 = gui.DlgFromDict(params, title='Travelling Waves Basic', fixed=['date'])
  
+# default set here, but accept as input arg?
+# something like this might work
+https://stackoverflow.com/a/4033743/4961292
 ConditionList = [0.9, 0.75, 0.6] 
  
 Exp = data.TrialHandler(ConditionList,NumTrials, method='random', dataTypes=None, extraInfo=None,seed=None,originPath=None)

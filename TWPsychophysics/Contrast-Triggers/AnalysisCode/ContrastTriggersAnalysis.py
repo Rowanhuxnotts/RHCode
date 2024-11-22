@@ -18,14 +18,24 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import seaborn as sns
+import getpass 
 
-# Get participant details and parameters
+# %% Get participant details and parameters
 PartInitials = "RH"
 Conditions = [0.9, 0.75, 0.6]
 
 FilePrefix = "TW_" + PartInitials + "*"
 
-DataLocation = '/home/rowanhuxley/Documents/Data_Various/BinRiv/Psychophysics/Contrast-Triggers/Data/'
+# consider making this an input argument
+# or check who is running the code?
+username = getpass.getuser()
+if username == "rowanhuxley":
+    DataLocation = '/home/rowanhuxley/Documents/Data_Various/BinRiv/Psychophysics/Contrast-Triggers/Data/'
+elif username == "lpzds1" | username == "lpzez":
+    DataLocation = f'/Users/{username}/data/BinRiv/Psychophysics/Contrast-Triggers/Data/'
+else:
+    raise Exception(f"user {username} unknown!")
+
 SearchTxt = DataLocation + FilePrefix
 
 # %% Convert dataset to tidy data
