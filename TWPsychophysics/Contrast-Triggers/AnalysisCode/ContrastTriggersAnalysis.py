@@ -20,6 +20,62 @@ from scipy import stats
 import seaborn as sns
 import getpass 
 
+# %%
+def loadExcelData(filename):
+    """
+    loadExcelData - load in 1 excel file and return the SepSeries    
+    """
+    SepSeries = []
+    print(filename)
+    df = pd.read_excel(filename)
+    df = df.reset_index()  # make sure indexes pair with number of rows
+    for index, row in df.iterrows():
+        row.pop("index")
+        row.pop("ContrastLevel_mean")
+        row.pop("ContrastLevel_std")
+        TravelTimeMean = row.pop("TravelTime_mean")
+        TravelTimeSd = row.pop("TravelTime_std")
+        SepSeries.append(row)
+ 
+    return SepSeries
+
+
+def tidyUpSeries(SepSeries, PartInitials):
+    """
+    tidyUpSeries - reorganises the very long 1d series 
+                   into a table with rows = trial, columns = variables
+
+    used to save out files in tidy format, so we can opt into pandas goodness.
+    """
+    # make 3 columns (empty for now)
+    ContLevel = pd.Series(name = "Contrast Level")
+    ButtonPress = pd.Series(name = "Button_Pressed")
+    ResponseTime = pd.Series(name = "Response_Time")
+    # at this point for 1 file... expect x to be 3
+    assert len(SepSeries) == 3, f"Uhoh size should be 3, but is {len(SepSeries)}"
+    for x in SepSeries:
+        ContLevel = pd.concat([ContLevel, x.iloc[1:18]])
+        ButtonPress = pd.concat([ButtonPress, x.iloc[18:35]])
+        ResponseTime = pd.concat([ResponseTime, x.iloc[35:52]])
+
+    ## Create dataframe with each row being a trial
+    # Issues with duplicate labels so have to change series to np array
+    ContLevel = ContLevel.to_numpy()
+    ButtonPress = ButtonPress.to_numpy()
+    ResponseTime = ResponseTime.to_numpy()
+
+
+    # Create 1d Numpy array of participant intials
+    PartInits = np.full(len(ContLevel), PartInitials)
+
+    # Recombine data into tidy format
+    tidyData = pd.DataFrame({"Participant_Id" : PartInits,
+                             "Contrast_Level" : ContLevel,
+                             "Button_Pressed" : ButtonPress, 
+                             "Response_Time" : ResponseTime});
+    return tidyData 
+
+
 # %% Get participant details and parameters
 PartInitials = "RH"
 Conditions = [0.9, 0.75, 0.6]
@@ -31,8 +87,8 @@ FilePrefix = "TW_" + PartInitials + "*"
 username = getpass.getuser()
 if username == "rowanhuxley":
     DataLocation = '/home/rowanhuxley/Documents/Data_Various/BinRiv/Psychophysics/Contrast-Triggers/Data/'
-elif username == "lpzds1" | username == "lpzez":
-    DataLocation = f'/Users/{username}/data/BinRiv/Psychophysics/Contrast-Triggers/Data/'
+elif username == "lpzds1" or username == "lpzez":
+    DataLocation = f'/Users/{username}/projects/RHCode/TWPsychophysics/Contrast-Triggers/Data/'
 else:
     raise Exception(f"user {username} unknown!")
 
@@ -44,22 +100,25 @@ SearchTxt = DataLocation + FilePrefix
 AllFileNames =  []
 for File in glob.glob(SearchTxt):
     AllFileNames.append(File)
-    
+
+# %%  
 # Create list of all data rows
-SepSeries = []
-
-for File in AllFileNames:
-    df = pd.read_excel(File)
-    df = df.reset_index()  # make sure indexes pair with number of rows
-    for index, row in df.iterrows():
-        row.pop("index")
-        row.pop("ContrastLevel_mean")
-        row.pop("ContrastLevel_std")
-        TravelTimeMean = row.pop("TravelTime_mean")
-        TravelTimeSd = row.pop("TravelTime_std")
-        SepSeries.append(row)
 
 
+#for iFile, File in enumerate(AllFileNames): # for now, only once
+    SepSeries = []   
+    filename = AllFileNames[0]
+    SepSeries = loadExcelData(filename)
+    convertFlag = True
+    if convertFlag:
+        
+        tidyData = tidyUpSeries(SepSeries, PartInitials)
+        outfilename = # strip xls off and make CSV ending...
+        
+        #saveOutTidyData(tidyData, outfilename)
+        # define function that uses pd. csv writer...
+
+# %%
 # Seperate each real column to seperate series
 ContLevel = pd.Series(name = "Contrast Level")
 ButtonPress = pd.Series(name = "Button_Pressed")
@@ -82,6 +141,8 @@ PartInits = np.full(len(ContLevel), PartInitials)
 ColumnLabels = ["Participant_Id", "Contrast_Level", "Button_Pressed", "Response_Time"]
 AllData = pd.DataFrame([PartInits, ContLevel, ButtonPress, ResponseTime], index = ColumnLabels)
 AllData = AllData.transpose()
+
+
 
 # Change the contrast levels to correct values
 AllData.loc[AllData["Contrast_Level"] == 0.899999976158, "Contrast_Level"] = 0.9
