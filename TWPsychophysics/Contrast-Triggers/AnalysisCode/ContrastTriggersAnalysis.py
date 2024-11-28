@@ -20,7 +20,7 @@ from scipy import stats
 import seaborn as sns
 
 # Get participant details and parameters
-PartInitials = "RH"
+PartInitials = "MS"
 Conditions = [0.9, 0.75, 0.6]
 
 FilePrefix = "TW_" + PartInitials + "*"
@@ -39,7 +39,7 @@ for File in glob.glob(SearchTxt):
 SepSeries = []
 
 for File in AllFileNames:
-    df = pd.read_excel(File)
+    df = pd.read_csv(File)
     df = df.reset_index()  # make sure indexes pair with number of rows
     for index, row in df.iterrows():
         row.pop("index")

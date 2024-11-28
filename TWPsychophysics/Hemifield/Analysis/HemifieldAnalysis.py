@@ -116,7 +116,7 @@ print("\n")
 # T-test 
 
 
-stats.ttest_rel(AllData.loc[(AllData["Direction"] == "right") & (AllData["VisibleHemifield"] == "Right"), "ResponseTime"], AllData.loc[(AllData["Direction"] == "right") & (AllData["VisibleHemifield"] == "Left"), "ResponseTime"])
+#stats.ttest_rel(AllData.loc[(AllData["Direction"] == "right") & (AllData["VisibleHemifield"] == "Right"), "ResponseTime"], AllData.loc[(AllData["Direction"] == "right") & (AllData["VisibleHemifield"] == "Left"), "ResponseTime"])
 # %% Visualisation
 sns.set_theme()
 

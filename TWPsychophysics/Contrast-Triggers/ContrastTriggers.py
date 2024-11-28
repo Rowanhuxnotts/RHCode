@@ -5,6 +5,7 @@ from scipy import *
 import time, copy 
 from datetime import datetime
 from numpy.random import shuffle
+import csv
 
 #--------------------------------------
 #              Initialisation
