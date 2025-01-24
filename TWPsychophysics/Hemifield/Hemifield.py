@@ -13,6 +13,7 @@ import random as rand
 
 #Experiment params
 NumTrials = 25
+
 ConditionList = ["Right", "Left"] 
 rand.shuffle(ConditionList)
 
@@ -47,7 +48,7 @@ Clock = core.Clock()
 # Annuli
 RadL = visual.RadialStim(winL,size=resY-350,angularCycles=25, color=-1,angularRes=35,units="pix", radialCycles = 0, contrast = 0.7)
 maskL = visual.RadialStim(winL,color=[0,0,0],size=(resY-350)*0.745,angularCycles=25,angularRes=35,units="pix")
-ConcR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1,angularRes=35,units="pix", radialCycles= 8, ori=300, contrast = 0.3)
+ConcR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1,angularRes=35,units="pix", radialCycles= 8, ori=300, contrast = 0.45)
 maskR = visual.RadialStim(winR,color=[0,0,0],size=(resY-350)*0.76,angularCycles=25,angularRes=35,units="pix")
 
 # End location
@@ -58,8 +59,11 @@ EndLocR1 = visual.PatchStim(winR, tex='None', units='pix', pos=[0,-440], size=(7
 
 #Create fixation and fusion lock
 #Dot
-fixationL = visual.PatchStim(winL, texRes=512, tex='None', mask="circle",units='pix',rgb=-1, pos=[0,0], size=(20.0,20.0))
-fixationR = visual.PatchStim(winR, texRes=512, tex='None', mask="circle",units='pix',rgb=-1, pos=[0,0], size=(20.0,20.0))
+fixationL = visual.PatchStim(winL, texRes=512, tex='None', mask="circle",units='pix',rgb=-1, pos=[0,0], size=(40.0,40.0))
+fixationR = visual.PatchStim(winR, texRes=512, tex='None', mask="circle",units='pix',rgb=-1, pos=[0,0], size=(40.0,40.0))
+
+dotL = visual.PatchStim(winL, texRes=512, tex='None', mask="circle",units='pix',rgb=1, pos=[0,0], size=(20.0,20.0))
+dotR = visual.PatchStim(winR, texRes=512, tex='None', mask="circle",units='pix',rgb=1, pos=[0,0], size=(20.0,20.0))
 
 #Spokes
 # to the right window    
@@ -93,7 +97,7 @@ fusionR = visual.PatchStim(winR, tex=array,
     interpolate=False,
     autoLog=True) 
 
-Fixation = [fixationL, fixationR, BarBottom, BarTop, BarLeft, BarRight, EndLocL1, EndLocL2, EndLocR1, EndLocR2]
+Fixation = [fixationL, fixationR, dotR, dotL, BarBottom, BarTop, BarLeft, BarRight, EndLocL1, EndLocL2, EndLocR1, EndLocR2]
 
 # Break stimuli
 
