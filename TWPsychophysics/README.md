@@ -3,4 +3,7 @@ Contrast triggers-
 A psychophysics experiment looking atperceptual travelling waves during binocular rivalry. Uses a paradigm based off Wilson et al., (2001). 
 Explores the effect of trigger contrast level on travelling wave speed and travelling wave trigger rate.
 
-(Need to include more experiment and analysis info)
+All experiment files are currently ran on:
+-Mac OS 10.6.8
+-Psychopy 1.70.00
+-Python 2.6.6
