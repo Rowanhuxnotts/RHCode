@@ -15,6 +15,9 @@ On macos / linux, the following should work (WSL? on Window, too?)
 ```bash
 conda env create -n psychopy 
 conda activate psychopy
-conda install -c conda-forge psychopy
 #... some dependencies, version!, etc.
 ```
+
+The version installed in the labs is as old as the hills (1.70.00) >10,15 years old... so will not run indefinitely, but I managed to get it to run on my machine with some checks and pointing at code that's moved (eg `PatchStim()` -> `GratingStim()`)
+
+![example screen capture](./stim-psychopy-demo-mode.png)

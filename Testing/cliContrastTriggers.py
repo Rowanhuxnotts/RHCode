@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 """
 cliContrastTriggers.py
 
@@ -10,8 +11,21 @@ ds 2025-01-26
 """
 
 # Import modules
+import psychopy # for version checking etc.
 from psychopy import *
-# import numpy as num
+# Check version / deal with stimuli slightly differently
+version = psychopy.__version__
+psychopy_modern = False 
+if str(version) < '2020.1.0':
+    print("running in lab - older version of psychopy")
+    psychopy_modern = False
+else:   
+    print("running somewhere else - modern version of psychopy")
+    psychopy_modern = True
+    psychopy.plugins.activatePlugins() # needed for modern version
+    visual.PatchStim = visual.GratingStim # PatchStim migrated to GratingStim in newer versions
+
+from numpy import *
 from scipy import *
 import time, copy 
 from datetime import datetime
@@ -22,16 +36,23 @@ import csv
 #              Initialisation
 #--------------------------------------
 
+
+
+
+
+
 simulationMode = True  # False
 
 if simulationMode:
     print("Running in simulation mode")
-    # present 5x smaller
-    resX=2/10 * 1680
-    resY=2/10 * 1050
+    # present 3x smaller
+    resX=1680/2.5
+    resY=1050/2.5
     theMonitor = 'testMonitor' # ?? CHANGE??
     fullscrMode = False
-    pos = [[50,50],[50+resX, 50]] # offset 2 windows
+    pos = [[50,50],[100+resX, 50]] # offset 2 windows
+    allowGUI = True
+    viewScale = [0.4, 0.4]
 
 else:
     print("Running in experiment mode")
@@ -39,18 +60,18 @@ else:
     resY=1050
     theMonitor = 'testMonitor'
     pos = [[0,0],[0,0]] # DON'T offset 2 windows
+    allowGUI = False
+    viewScale = [1, 1]
+    
 
-
-
-
-#Experiment params
+# Experiment params
 NumTrials = 1
 
 # Get Date and start time
 now = datetime.now()
 Date = now.strftime('%d%m%y_%H%M')
 
-#present a dialogue box for changing params
+# present a dialogue box for changing params
 params = {'Observer':''}
 paramsDlg2 = gui.DlgFromDict(params, title='Travelling Waves Basic', fixed=['date'])
  
@@ -59,15 +80,15 @@ ConditionList = [0.9, 0.75, 0.6]
 Exp = data.TrialHandler(ConditionList,NumTrials, method='random', dataTypes=None, extraInfo=None,seed=None,originPath=None)
 
 
-# Setup window
+# Setup window (this works on old as well as new versions)
 winL = visual.Window(size=(resX,resY), 
                      monitor=theMonitor, units='pix', 
                      bitsMode=None, fullscr=fullscrMode, 
-                     allowGUI=False, color=0.0,screen=0, pos = pos[0])
+                     allowGUI=allowGUI, color=0.0,screen=0, pos = pos[0], viewScale=viewScale)
 winR = visual.Window(size=(resX,resY), 
                      monitor=theMonitor, units='pix', 
                      bitsMode=None, fullscr=fullscrMode, 
-                     allowGUI=False, color=0.0,screen=1, pos = pos[1])
+                     allowGUI=allowGUI, color=0.0,screen=1, pos = pos[1], viewScale=viewScale)
 
 # Are these needed???
 #winL.setGamma([1.688,1.688,1.688])
@@ -80,11 +101,40 @@ Clock = core.Clock()
 #            Create stimlui 
 #--------------------------------------
 
-#Create stimlui initial stimuli
-RadL = visual.RadialStim(winL,size=resY-350,angularCycles=25, color=-1,angularRes=35,units="pix", radialCycles = 0, contrast = 0.7)
-maskL = visual.RadialStim(winL,color=[0,0,0],size=(resY-350)*0.745,angularCycles=25,angularRes=35,units="pix")
-ConcR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=-1,angularRes=35,units="pix", radialCycles= 8, ori=300, contrast = 0.3)
-maskR = visual.RadialStim(winR,color=[0,0,0],size=(resY-350)*0.76,angularCycles=25,angularRes=35,units="pix")
+# Create stimlui initial stimuli
+# RadialStim has changed / been moved in newer versions of psychopy, 
+# so deal with this separately !
+def createRadialStim(winL, winR, resY, aCycles = 25, c=-1, aRes = 35, units="pix", contrast=(0.7, 0.3)):
+    """
+    creates radial patches and returns the radial stim, concentric stim 
+    and masks for L and R
+    """
+    RadL = visual.RadialStim(winL,size=resY-350,angularCycles=aCycles, color=c, angularRes=aRes, 
+                             units=units, radialCycles = 0, contrast = contrast[0])
+    
+    maskL = visual.RadialStim(winL,color=[0,0,0],size=(resY-350)*0.745,
+                              angularCycles=aCycles,angularRes=aRes,units=units)
+    
+    ConcR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=c, angularRes = aRes,
+                              units=units, radialCycles= 8, ori=300, contrast = contrast[1])
+    
+    maskR = visual.RadialStim(winR,color=[0,0,0],size=(resY-350)*0.76,
+                              angularCycles=aCycles,angularRes=aRes,units=units)
+    return RadL, maskL, ConcR, maskR
+
+    """
+    creates radial patches and returns the radial stim, concentric stim 
+    and masks for L and R (using modern syntax and more recent stim locations.)
+    """
+    psychopy.plugins.activatePlugins() # needed for modern version
+    from psychopy import RadialStim
+    RadL = visual.RadialStim(winL,size=resY-350,angularCycles=aCycles, color=c, angularRes=aRes, units=units, radialCycles = 0, contrast = contrast[0])
+    maskL = visual.RadialStim(winL,color=[0,0,0],size=(resY-350)*0.745,angularCycles=aCycles,angularRes=aRes,units=units)
+    ConcR = visual.RadialStim(winR,size=resY-350,angularCycles=0, color=c, angularRes = aRes,units=units, radialCycles= 8, ori=300, contrast = contrast[1]) 
+    maskR = visual.RadialStim(winR,color=[0,0,0],size=(resY-350)*0.76,angularCycles=aCycles,angularRes=aRes,units=units)
+    return RadL, maskL, ConcR, maskR
+
+RadL, maskL, ConcR, maskR = createRadialStim(winL, winR, resY)
 
 # End location
 
