@@ -1,0 +1,2 @@
+PartInitials,Age,Gender,DominantEye,Handedness,LEContrast,REContrast,EyeContrastRatio,LEExpContrast,REExpContrast
+Test,Test,24,M,R,R,0.6309573444801917,0.22387211385683414,0.35481338923357664,1,0.35481338923357664
